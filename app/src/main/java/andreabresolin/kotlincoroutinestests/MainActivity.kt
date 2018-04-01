@@ -27,6 +27,8 @@ import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.android.UI
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.launch
+import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicInteger
 
 class MainActivity : AppCompatActivity() {
@@ -51,6 +53,9 @@ class MainActivity : AppCompatActivity() {
         testCoroutinesButton.setOnClickListener { onTestCoroutinesButtonClick() }
         testAsyncsInCoroutineButton.setOnClickListener { onTestAsyncsInCoroutineButtonClick() }
         testRxJavaButton.setOnClickListener { onTestRxJavaButtonClick() }
+        testRxJavaButton2.setOnClickListener { onTestRxJavaButtonClick2() }
+        testRxJavaButton3.setOnClickListener { onTestRxJavaButtonClick3() }
+        testRxJavaButton4.setOnClickListener { onTestRxJavaButtonClick4() }
     }
 
     private fun onTestCoroutinesButtonClick() {
@@ -97,11 +102,56 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun onTestRxJavaButtonClick2() {
+        val testName = "RxJava test 2"
+
+        startTest(testName)
+
+        testArray
+                .map { Observable.fromCallable { stubAsyncFunc() }.subscribeOn(Schedulers.computation()) }
+                .let { Observable.merge(it) }
+                .ignoreElements()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { checkTestEnd(testName) }
+    }
+
+    private fun onTestRxJavaButtonClick3() {
+        val testName = "RxJava test 3"
+
+        startTest(testName)
+
+        Observable
+                .range(1, TEST_ITERATIONS_COUNT)
+                .flatMap { Observable.fromCallable { stubAsyncFunc() }.subscribeOn(Schedulers.computation()) }
+                .ignoreElements()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { checkTestEnd(testName) }
+    }
+
+    private fun onTestRxJavaButtonClick4() {
+        val testName = "RxJava test 4"
+
+        startTest(testName)
+
+        Observable
+                .range(1, TEST_ITERATIONS_COUNT)
+                .observeOn(Schedulers.computation())
+                .map { stubAsyncFunc() }
+                .ignoreElements()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { checkTestEnd(testName) }
+    }
+
+
+    private val threadsSeen = Collections.newSetFromMap(ConcurrentHashMap<Int, Boolean>())
+
     private fun stubAsyncFunc() {
         counter.incrementAndGet()
+        threadsSeen.add(Thread.currentThread().hashCode())
     }
 
     private fun startTest(testName: String) {
+        threadsSeen.clear()
         testStartTime = System.currentTimeMillis()
         logStart(testName)
     }
@@ -111,7 +161,7 @@ class MainActivity : AppCompatActivity() {
             if (it == TEST_ITERATIONS_COUNT) {
                 val testTime = System.currentTimeMillis() - testStartTime
 
-                logEnd("$testName - ${testTime}ms")
+                logEnd("$testName - ${testTime}ms, seen ${threadsSeen.size} threads")
 
                 return@getAndUpdate 0
             }

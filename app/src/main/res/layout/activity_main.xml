@@ -40,7 +40,42 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/testAsyncsInCoroutineButton"
+        app:layout_constraintVertical_weight="1"/>
+
+    <Button
+        android:id="@+id/testRxJavaButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test RxJava 2"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/testRxJavaButton"
+        app:layout_constraintVertical_weight="1"/>
+
+    <Button
+        android:id="@+id/testRxJavaButton3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test RxJava 3"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/testRxJavaButton2"
+        app:layout_constraintVertical_weight="1"/>
+
+
+    <Button
+        android:id="@+id/testRxJavaButton4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Test RxJava 4"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/testRxJavaButton3"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintVertical_weight="1"/>
+
 
 </android.support.constraint.ConstraintLayout>
